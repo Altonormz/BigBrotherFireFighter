@@ -36,15 +36,12 @@ def predict():
     img_array = np.expand_dims(img_array, axis=0)
     img_array = preprocess_input(img_array)
 
+
     pred_vec = model.predict(img_array)
-    pred_class = np.argmax(pred_vec)
-    confidence = np.max(pred_vec)
-    label = labels_dict[pred_class]
+    pred_classes = np.argsort(pred_vec)[0][::-1]  # Obtenez les indices triés en ordre décroissant
+    predictions = [{'label': labels_dict[class_index], 'confidence': round(float(pred_vec[0][class_index]), 3)} for class_index in pred_classes]
 
-    result = {'label': label, 'confidence': float(confidence)}
-    print(str(result))
-    return jsonify(result)
-
+    return jsonify(predictions)
 
 if __name__ == '__main__':
     app.run()
